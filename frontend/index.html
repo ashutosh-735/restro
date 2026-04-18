@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMIÈRE | Modern Gastronomy</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind Config for Custom Colors/Fonts -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            gold: '#D4AF37',
+                            dark: '#0f172a',
+                            glass: 'rgba(255, 255, 255, 0.05)',
+                            glassDark: 'rgba(15, 23, 42, 0.6)'
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'slide-up': 'slideUp 0.6s ease-out',
+                        'spin-slow': 'spin 8s linear infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+
+        /* Glassmorphism Utilities */
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .dark .glass {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+        .dark .glass-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        /* 3D Tilt Effect Base */
+        .tilt-card {
+            transform-style: preserve-3d;
+            transform: perspective(1000px);
+        }
+        .tilt-content {
+            transform: translateZ(20px);
+        }
+
+        /* Loader */
+        .loader-overlay {
+            position: fixed;
+            inset: 0;
+            background: #fff;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease;
+        }
+        .dark .loader-overlay {
+            background: #0f172a;
+        }
+        
+        /* Floating Input Animation */
+        .floating-input:focus ~ label,
+        .floating-input:not(:placeholder-shown) ~ label {
+            top: -0.5rem;
+            left: 0.75rem;
+            font-size: 0.75rem;
+            color: #D4AF37;
+            background-color: white;
+            padding: 0 0.25rem;
+        }
+        .dark .floating-input:focus ~ label,
+        .dark .floating-input:not(:placeholder-shown) ~ label {
+            background-color: #1e293b;
+        }
+
+        /* Hide/Show Logic */
+        .page-section {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+        .page-section.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300 font-sans overflow-x-hidden">
+
+    <!-- Loading Screen -->
+    <div id="loader" class="loader-overlay">
+        <div class="text-center">
+            <h1 class="font-serif text-4xl text-brand-gold animate-pulse tracking-widest">LUMIÈRE</h1>
+            <p class="text-sm mt-2 text-slate-400 tracking-widest uppercase">Loading Experience</p>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 cursor-pointer" onclick="router.navigate('home')">
+                    <span class="font-serif text-2xl font-bold tracking-wider text-slate-900 dark:text-white">
+                        LUMI<span class="text-brand-gold">ÈRE</span>
+                    </span>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <button onclick="router.navigate('home')" class="nav-link hover:text-brand-gold transition-colors text-sm font-medium uppercase tracking-wide">Home</button>
+                    <button onclick="router.navigate('menu')" class="nav-link hover:text-brand-gold transition-colors text-sm font-medium uppercase tracking-wide">Menu</button>
+                    <button onclick="router.navigate('booking')" class="nav-link hover:text-brand-gold transition-colors text-sm font-medium uppercase tracking-wide">Reservations</button>
+                    
+                    <!-- Auth Buttons -->
+                    <div id="auth-nav" class="flex items-center space-x-4">
+                        <button onclick="router.navigate('login')" class="px-4 py-2 rounded-full border border-slate-300 dark:border-slate-600 hover:border-brand-gold hover:text-brand-gold transition-all text-sm">Sign In</button>
+                    </div>
+
+                    <!-- User Menu (Hidden by default) -->
+                    <div id="user-nav" class="hidden relative group">
+                        <button class="flex items-center space-x-2 focus:outline-none">
+                            <div class="w-8 h-8 rounded-full bg-brand-gold flex items-center justify-center text-white font-bold text-xs">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <span id="user-name-display" class="text-sm font-medium">User</span>
+                        </button>
+                        <!-- Dropdown -->
+                        <div class="absolute right-0 mt-2 w-48 glass-card rounded-xl shadow-xl py-2 hidden group-hover:block animate-fade-in">
+                            <button onclick="router.navigate('dashboard')" class="block w-full text-left px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 text-sm">My Dashboard</button>
+                            <button onclick="router.navigate('admin')" id="admin-link" class="hidden w-full text-left px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 text-sm text-brand-gold">Admin Panel</button>
+                            <div class="border-t border-slate-200 dark:border-slate-700 my-1"></div>
+                            <button onclick="auth.logout()" class="block w-full text-left px-4 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 text-sm">Logout</button>
+                        </div>
+                    </div>
+
+                    <!-- Theme Toggle -->
+                    <button onclick="theme.toggle()" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                        <i class="fas fa-moon dark:hidden"></i>
+                        <i class="fas fa-sun hidden dark:block text-yellow-400"></i>
+                    </button>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="text-slate-600 dark:text-slate-200 hover:text-slate-900 focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden glass border-t border-slate-200 dark:border-slate-700">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <button onclick="router.navigate('home')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-slate-200 dark:hover:bg-slate-700">Home</button>
+                <button onclick="router.navigate('menu')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-slate-200 dark:hover:bg-slate-700">Menu</button>
+                <button onclick="router.navigate('booking')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-slate-200 dark:hover:bg-slate-700">Book Table</button>
+                <button onclick="router.navigate('login')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-slate-200 dark:hover:bg-slate-700">Sign In</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="pt-20 min-h-screen relative">
+        
+        <!-- ================= HOME PAGE ================= -->
+        <section id="home" class="page-section active">
+            <!-- Hero -->
+            <div class="relative h-screen flex items-center justify-center overflow-hidden">
+                <!-- Background Image with Parallax feel -->
+                <div class="absolute inset-0 z-0">
+                    <img src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Restaurant Interior" class="w-full h-full object-cover opacity-90 dark:opacity-60">
+                    <div class="absolute inset-0 bg-gradient-to-b from-slate-900/30 via-transparent to-slate-50 dark:to-slate-900"></div>
+                </div>
+
+                <div class="relative z-10 text-center px-4 max-w-4xl mx-auto">
+                    <p class="text-brand-gold font-medium tracking-[0.3em] uppercase mb-4 animate-slide-up">Est. 2024</p>
+                    <h1 class="font-serif text-6xl md:text-8xl text-white mb-6 drop-shadow-lg animate-slide-up" style="animation-delay: 0.1s;">
+                        Taste the <span class="italic text-brand-gold">Extraordinary</span>
+                    </h1>
+                    <p class="text-lg md:text-xl text-slate-200 mb-10 max-w-2xl mx-auto font-light animate-slide-up" style="animation-delay: 0.2s;">
+                        Experience a fusion of modern culinary artistry and timeless elegance in the heart of the city.
+                    </p>
+                    <div class="flex flex-col md:flex-row gap-4 justify-center animate-slide-up" style="animation-delay: 0.3s;">
+                        <button onclick="router.navigate('menu')" class="px-8 py-4 bg-brand-gold text-white rounded-full font-medium hover:bg-yellow-600 transition-all transform hover:scale-105 shadow-lg hover:shadow-brand-gold/50">
+                            View Menu
+                        </button>
+                        <button onclick="router.navigate('booking')" class="px-8 py-4 glass text-white rounded-full font-medium hover:bg-white/20 transition-all transform hover:scale-105">
+                            Book a Table
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Scroll Down Indicator -->
+                <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce text-white/70">
+                    <i class="fas fa-chevron-down text-2xl"></i>
+                </div>
+            </div>
+
+            <!-- Featured Section -->
+            <div class="max-w-7xl mx-auto px-4 py-24">
+                <div class="text-center mb-16">
+                    <h2 class="font-serif text-4xl md:text-5xl mb-4 text-slate-900 dark:text-white">Curated Delicacies</h2>
+                    <div class="w-24 h-1 bg-brand-gold mx-auto"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="featured-dishes">
+                    <!-- JS will populate this -->
+                </div>
+            </div>
+
+            <!-- Ambiance / Parallax Section -->
+            <div class="relative py-32 bg-fixed bg-center bg-cover" style="background-image: url('https://images.unsplash.com/photo-1559339352-11d035aa65de?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');">
+                <div class="absolute inset-0 bg-black/50"></div>
+                <div class="relative z-10 max-w-4xl mx-auto text-center px-4 glass-card p-12 rounded-2xl">
+                    <h2 class="font-serif text-4xl text-white mb-6">An Atmosphere of Luxury</h2>
+                    <p class="text-slate-200 text-lg mb-8">Designed by award-winning architects, our space offers an intimate yet grand setting for your dining pleasure.</p>
+                    <button onclick="router.navigate('booking')" class="text-brand-gold border-b-2 border-brand-gold pb-1 hover:text-white hover:border-white transition-colors uppercase tracking-widest text-sm">Reserve Your Spot</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= MENU PAGE ================= -->
+        <section id="menu" class="page-section">
+            <div class="bg-slate-100 dark:bg-slate-800 py-12">
+                <div class="max-w-7xl mx-auto px-4">
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-12">
+                        <h2 class="font-serif text-4xl md:text-5xl mb-4 md:mb-0">Our Menu</h2>
+                        
+                        <!-- Filters -->
+                        <div class="flex space-x-2 overflow-x-auto pb-2 md:pb-0 w-full md:w-auto glass p-2 rounded-full">
+                            <button onclick="menuApp.filter('all')" class="filter-btn active px-6 py-2 rounded-full text-sm font-medium transition-all bg-brand-gold text-white">All</button>
+                            <button onclick="menuApp.filter('veg')" class="filter-btn px-6 py-2 rounded-full text-sm font-medium transition-all hover:bg-slate-200 dark:hover:bg-slate-700">Vegetarian</button>
+                            <button onclick="menuApp.filter('non-veg')" class="filter-btn px-6 py-2 rounded-full text-sm font-medium transition-all hover:bg-slate-200 dark:hover:bg-slate-700">Non-Veg</button>
+                            <button onclick="menuApp.filter('dessert')" class="filter-btn px-6 py-2 rounded-full text-sm font-medium transition-all hover:bg-slate-200 dark:hover:bg-slate-700">Desserts</button>
+                            <button onclick="menuApp.filter('drink')" class="filter-btn px-6 py-2 rounded-full text-sm font-medium transition-all hover:bg-slate-200 dark:hover:bg-slate-700">Drinks</button>
+                        </div>
+                    </div>
+
+                    <!-- Menu Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="menu-grid">
+                        <!-- JS Populated -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= BOOKING PAGE ================= -->
+        <section id="booking" class="page-section">
+            <div class="min-h-screen bg-slate-50 dark:bg-slate-900 py-12 px-4">
+                <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                    
+                    <!-- Form Side -->
+                    <div class="glass-card p-8 rounded-3xl shadow-2xl">
+                        <h2 class="font-serif text-3xl mb-6">Reserve a Table</h2>
+                        <form id="booking-form" onsubmit="bookingApp.handleSubmit(event)">
+                            <div class="space-y-6">
+                                <!-- Name -->
+                                <div class="relative">
+                                    <input type="text" id="book-name" required class="floating-input w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 focus:border-brand-gold focus:outline-none transition-colors placeholder-transparent" placeholder="Name">
+                                    <label for="book-name" class="absolute left-4 top-3 text-slate-500 transition-all pointer-events-none">Full Name</label>
+                                </div>
+
+                                <!-- Email & Phone -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="relative">
+                                        <input type="email" id="book-email" required class="floating-input w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 focus:border-brand-gold focus:outline-none transition-colors placeholder-transparent" placeholder="Email">
+                                        <label for="book-email" class="absolute left-4 top-3 text-slate-500 transition-all pointer-events-none">Email</label>
+                                    </div>
+                                    <div class="relative">
+                                        <input type="tel" id="book-phone" required class="floating-input w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 focus:border-brand-gold focus:outline-none transition-colors placeholder-transparent" placeholder="Phone">
+                                        <label for="book-phone" class="absolute left-4 top-3 text-slate-500 transition-all pointer-events-none">Phone</label>
+                                    </div>
+                                </div>
+
+                                <!-- Date & Time -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm text-slate-500 mb-2">Select Date</label>
+                                        <input type="date" id="book-date" required class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 focus:border-brand-gold focus:outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm text-slate-500 mb-2">Select Time</label>
+                                        <select id="book-time" required class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 focus:border-brand-gold focus:outline-none">
+                                            <option value="">Choose Time</option>
+                                            <option value="17:00">05:00 PM</option>
+                                            <option value="18:00">06:00 PM</option>
+                                            <option value="19:00">07:00 PM</option>
+                                            <option value="20:00">08:00 PM</option>
+                                            <option value="21:00">09:00 PM</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Table Type -->
+                                <div>
+                                    <label class="block text-sm text-slate-500 mb-3">Table Preference</label>
+                                    <div class="grid grid-cols-3 gap-4">
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="table-type" value="2-seater" class="peer sr-only" checked onchange="bookingApp.updatePrice(50)">
+                                            <div class="p-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 peer-checked:border-brand-gold peer-checked:bg-brand-gold/10 text-center transition-all">
+                                                <i class="fas fa-chair mb-2 text-xl"></i>
+                                                <div class="text-sm font-bold">2 Seater</div>
+                                                <div class="text-xs text-slate-500">$50</div>
+                                            </div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="table-type" value="4-seater" class="peer sr-only" onchange="bookingApp.updatePrice(90)">
+                                            <div class="p-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 peer-checked:border-brand-gold peer-checked:bg-brand-gold/10 text-center transition-all">
+                                                <i class="fas fa-users mb-2 text-xl"></i>
+                                                <div class="text-sm font-bold">4 Seater</div>
+                                                <div class="text-xs text-slate-500">$90</div>
+                                            </div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="table-type" value="vip" class="peer sr-only" onchange="bookingApp.updatePrice(150)">
+                                            <div class="p-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 peer-checked:border-brand-gold peer-checked:bg-brand-gold/10 text-center transition-all">
+                                                <i class="fas fa-gem mb-2 text-xl"></i>
+                                                <div class="text-sm font-bold">VIP Booth</div>
+                                                <div class="text-xs text-slate-500">$150</div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="w-full py-4 bg-brand-gold text-white rounded-xl font-bold text-lg hover:bg-yellow-600 transition-all shadow-lg hover:shadow-brand-gold/50 transform hover:-translate-y-1">
+                                    Proceed to Payment
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Visual Side -->
+                    <div class="hidden lg:block relative h-full min-h-[600px] rounded-3xl overflow-hidden shadow-2xl">
+                        <img src="https://images.unsplash.com/photo-1550966871-3ed3c47e2ce2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" class="absolute inset-0 w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent flex flex-col justify-end p-10">
+                            <h3 class="font-serif text-3xl text-white mb-2">Premium Dining</h3>
+                            <p class="text-slate-300 mb-6">Every reservation includes a complimentary welcome drink and amuse-bouche.</p>
+                            <div class="glass-card p-6 rounded-xl inline-block">
+                                <div class="text-sm text-slate-400 uppercase tracking-wider">Total Estimate</div>
+                                <div class="text-3xl font-bold text-white" id="booking-price">$50.00</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PAYMENT PAGE ================= -->
+        <section id="payment" class="page-section">
+            <div class="min-h-screen flex items-center justify-center p-4 bg-slate-100 dark:bg-slate-900">
+                <div class="max-w-md w-full glass-card p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+                    <!-- Success Overlay -->
+                    <div id="payment-success" class="absolute inset-0 bg-white dark:bg-slate-800 z-20 flex flex-col items-center justify-center hidden">
+                        <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mb-4 animate-bounce">
+                            <i class="fas fa-check text-3xl text-white"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2">Booking Confirmed!</h3>
+                        <p class="text-slate-500 text-center mb-6">A confirmation email has been sent.</p>
+                        <button onclick="router.navigate('dashboard')" class="px-6 py-2 bg-brand-gold text-white rounded-full">View My Bookings</button>
+                    </div>
+
+                    <div class="flex justify-between items-center mb-8">
+                        <h2 class="font-serif text-2xl">Checkout</h2>
+                        <div class="text-brand-gold"><i class="fas fa-lock"></i> Secure</div>
+                    </div>
+
+                    <!-- Summary -->
+                    <div class="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-xl mb-6">
+                        <div class="flex justify-between mb-2 text-sm">
+                            <span class="text-slate-500">Table Type</span>
+                            <span class="font-medium" id="pay-table">2 Seater</span>
+                        </div>
+                        <div class="flex justify-between mb-2 text-sm">
+                            <span class="text-slate-500">Date</span>
+                            <span class="font-medium" id="pay-date">Oct 24</span>
+                        </div>
+                        <div class="flex justify-between mb-2 text-sm">
+                            <span class="text-slate-500">Time</span>
+                            <span class="font-medium" id="pay-time">19:00</span>
+                        </div>
+                        <div class="border-t border-slate-200 dark:border-slate-600 my-2"></div>
+                        <div class="flex justify-between font-bold text-lg">
+                            <span>Total</span>
+                            <span id="pay-total">$50.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Card Form -->
+                    <form onsubmit="paymentApp.process(event)">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-500 mb-1 uppercase">Card Number</label>
+                                <div class="relative">
+                                    <input type="text" placeholder="0000 0000 0000 0000" class="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 focus:border-brand-gold focus:outline-none font-mono">
+                                    <i class="fab fa-cc-visa absolute left-3 top-3.5 text-slate-400 text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-500 mb-1 uppercase">Expiry</label>
+                                    <input type="text" placeholder="MM/YY" class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 focus:border-brand-gold focus:outline-none font-mono">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-500 mb-1 uppercase">CVC</label>
+                                    <input type="text" placeholder="123" class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 focus:border-brand-gold focus:outline-none font-mono">
+                                </div>
+                            </div>
+                            <button type="submit" class="w-full py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-bold hover:opacity-90 transition-opacity mt-4">
+                                Pay Now
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= AUTH PAGES (Login/Register) ================= -->
+        <section id="login" class="page-section">
+            <div class="min-h-screen flex items-center justify-center p-4 bg-[url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center">
+                <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+                <div class="relative z-10 w-full max-w-md glass-card p-8 md:p-10 rounded-3xl shadow-2xl animate-slide-up">
+                    <div class="text-center mb-8">
+                        <h2 class="font-serif text-3xl text-white mb-2">Welcome Back</h2>
+                        <p class="text-slate-300 text-sm">Sign in to access your reservations</p>
+                    </div>
+                    <form onsubmit="auth.login(event)" class="space-y-6">
+                        <div class="relative">
+                            <input type="email" id="login-email" required class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-slate-300 focus:outline-none focus:border-brand-gold focus:bg-white/20 transition-all" placeholder="Email Address">
+                        </div>
+                        <div class="relative">
+                            <input type="password" id="login-pass" required class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-slate-300 focus:outline-none focus:border-brand-gold focus:bg-white/20 transition-all" placeholder="Password">
+                        </div>
+                        <button type="submit" class="w-full py-3 bg-brand-gold text-white rounded-xl font-bold hover:bg-yellow-600 transition-all shadow-lg">Sign In</button>
+                    </form>
+                    <div class="mt-6 text-center text-sm text-slate-300">
+                        Don't have an account? <button onclick="router.navigate('register')" class="text-brand-gold hover:underline">Register</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="register" class="page-section">
+            <div class="min-h-screen flex items-center justify-center p-4 bg-slate-900">
+                <div class="w-full max-w-md glass-card p-8 md:p-10 rounded-3xl shadow-2xl animate-slide-up border-t-4 border-brand-gold">
+                    <div class="text-center mb-8">
+                        <h2 class="font-serif text-3xl mb-2">Join Lumière</h2>
+                        <p class="text-slate-500 text-sm">Create an account to book tables</p>
+                    </div>
+                    <form onsubmit="auth.register(event)" class="space-y-4">
+                        <div class="relative">
+                            <input type="text" id="reg-name" required class="floating-input w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 focus:border-brand-gold focus:outline-none placeholder-transparent" placeholder="Name">
+                            <label class="absolute left-4 top-3 text-slate-500 transition-all pointer-events-none">Full Name</label>
+                        </div>
+                        <div class="relative">
+                            <input type="email" id="reg-email" required class="floating-input w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 focus:border-brand-gold focus:outline-none placeholder-transparent" placeholder="Email">
+                            <label class="absolute left-4 top-3 text-slate-500 transition-all pointer-events-none">Email</label>
+                        </div>
+                        <div class="relative">
+                            <input type="password" id="reg-pass" required class="floating-input w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 focus:border-brand-gold focus:outline-none placeholder-transparent" placeholder="Password">
+                            <label class="absolute left-4 top-3 text-slate-500 transition-all pointer-events-none">Password</label>
+                        </div>
+                        <button type="submit" class="w-full py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-bold hover:opacity-90 transition-all mt-4">Create Account</button>
+                    </form>
+                    <div class="mt-6 text-center text-sm text-slate-500">
+                        Already a member? <button onclick="router.navigate('login')" class="text-brand-gold hover:underline">Sign In</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= USER DASHBOARD ================= -->
+        <section id="dashboard" class="page-section">
+            <div class="min-h-screen bg-slate-50 dark:bg-slate-900 p-4 md:p-8">
+                <div class="max-w-5xl mx-auto">
+                    <h2 class="font-serif text-3xl mb-8">My Account</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <!-- Profile Card -->
+                        <div class="glass-card p-6 rounded-2xl h-fit">
+                            <div class="flex items-center space-x-4 mb-6">
+                                <div class="w-16 h-16 rounded-full bg-brand-gold flex items-center justify-center text-white text-2xl">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-lg" id="dash-name">User Name</h3>
+                                    <p class="text-sm text-slate-500" id="dash-email">user@email.com</p>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-slate-500">Member Since</span>
+                                    <span>2024</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-slate-500">Total Visits</span>
+                                    <span id="dash-visits">0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bookings List -->
+                        <div class="md:col-span-2 space-y-4">
+                            <h3 class="font-serif text-xl mb-4">Upcoming Reservations</h3>
+                            <div id="bookings-list" class="space-y-4">
+                                <!-- JS Populated -->
+                                <div class="text-center py-10 text-slate-500">No upcoming reservations.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= ADMIN PANEL ================= -->
+        <section id="admin" class="page-section">
+            <div class="min-h-screen bg-slate-100 dark:bg-slate-950 flex">
+                <!-- Sidebar -->
+                <aside class="w-64 bg-white dark:bg-slate-900 h-screen fixed shadow-xl hidden md:flex flex-col">
+                    <div class="p-6 border-b border-slate-100 dark:border-slate-800">
+                        <span class="font-serif text-xl font-bold">Admin Panel</span>
+                    </div>
+                    <nav class="flex-1 p-4 space-y-2">
+                        <button onclick="adminApp.switchTab('menu')" class="w-full text-left px-4 py-3 rounded-lg bg-brand-gold/10 text-brand-gold font-medium"><i class="fas fa-utensils mr-2"></i> Manage Menu</button>
+                        <button onclick="adminApp.switchTab('bookings')" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300"><i class="fas fa-calendar mr-2"></i> View Bookings</button>
+                    </nav>
+                    <div class="p-4 border-t border-slate-100 dark:border-slate-800">
+                        <button onclick="router.navigate('home')" class="w-full py-2 text-slate-500 hover:text-slate-900 dark:hover:text-white text-sm">Exit Admin</button>
+                    </div>
+                </aside>
+
+                <!-- Main Content -->
+                <div class="flex-1 md:ml-64 p-8">
+                    <!-- Add Menu Item -->
+                    <div id="admin-menu-tab" class="max-w-4xl">
+                        <h2 class="font-serif text-2xl mb-6">Add New Menu Item</h2>
+                        <div class="glass-card p-6 rounded-2xl mb-8">
+                            <form onsubmit="adminApp.addMenuItem(event)" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium mb-2">Item Name</label>
+                                    <input type="text" name="name" required class="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 focus:border-brand-gold focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Category</label>
+                                    <select name="category" class="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 focus:border-brand-gold focus:outline-none">
+                                        <option value="veg">Vegetarian</option>
+                                        <option value="non-veg">Non-Veg</option>
+                                        <option value="dessert">Dessert</option>
+                                        <option value="drink">Drink</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Price ($)</label>
+                                    <input type="number" name="price" required class="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 focus:border-brand-gold focus:outline-none">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium mb-2">Image URL</label>
+                                    <input type="url" name="image" placeholder="https://..." required class="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 focus:border-brand-gold focus:outline-none">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium mb-2">Description</label>
+                                    <textarea name="desc" rows="3" class="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 focus:border-brand-gold focus:outline-none"></textarea>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <button type="submit" class="px-6 py-2 bg-brand-gold text-white rounded-lg hover:bg-yellow-600 transition-colors">Add Item</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <h3 class="font-serif text-xl mb-4">Current Menu Items</h3>
+                        <div id="admin-menu-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Admin List Populated via JS -->
+                        </div>
+                    </div>
+
+                    <!-- View Bookings (Hidden by default) -->
+                    <div id="admin-bookings-tab" class="hidden max-w-6xl">
+                        <h2 class="font-serif text-2xl mb-6">All Reservations</h2>
+                        <div class="glass-card rounded-2xl overflow-hidden">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="bg-slate-50 dark:bg-slate-800 text-slate-500 text-xs uppercase">
+                                    <tr>
+                                        <th class="p-4">Guest</th>
+                                        <th class="p-4">Date</th>
+                                        <th class="p-4">Time</th>
+                                        <th class="p-4">Table</th>
+                                        <th class="p-4">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-bookings-list" class="text-sm divide-y divide-slate-100 dark:divide-slate-800">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-6 py-3 rounded-lg shadow-2xl transform translate-y-20 transition-transform duration-300 z-50 flex items-center">
+        <i class="fas fa-check-circle text-green-400 mr-3"></i>
+        <span id="toast-msg">Operation Successful</span>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- MOCK DATABASE (LocalStorage Wrapper) ---
+        const db = {
+            get: (key) => JSON.parse(localStorage.getItem(key) || '[]'),
+            set: (key, data) => localStorage.setItem(key, JSON.stringify(data)),
+            
+            init: () => {
+                if (!localStorage.getItem('menu')) {
+                    // Seed Data
+                    db.set('menu', [
+                        { id: 1, name: "Truffle Risotto", category: "veg", price: 24, image: "https://images.unsplash.com/photo-1476124369491-e7addf5db371?auto=format&fit=crop&w=600&q=80", desc: "Arborio rice, black truffle oil, parmesan crisp." },
+                        { id: 2, name: "Wagyu Steak", category: "non-veg", price: 65, image: "https://images.unsplash.com/photo-1546241072-48010ad2862c?auto=format&fit=crop&w=600&q=80", desc: "A5 Wagyu beef, roasted garlic mash, asparagus." },
+                        { id: 3, name: "Lobster Thermidor", category: "non-veg", price: 58, image: "https://images.unsplash.com/photo-1551248429-40975aa4de74?auto=format&fit=crop&w=600&q=80", desc: "Creamy lobster meat, gruyere cheese, mustard sauce." },
+                        { id: 4, name: "Matcha Lava Cake", category: "dessert", price: 16, image: "https://images.unsplash.com/photo-1624353365286-3f8d62daad51?auto=format&fit=crop&w=600&q=80", desc: "Warm matcha cake with a molten white chocolate center." },
+                        { id: 5, name: "Smoked Old Fashioned", category: "drink", price: 18, image: "https://images.unsplash.com/photo-1597075687490-8f673c6c17f6?auto=format&fit=crop&w=600&q=80", desc: "Bourbon, maple syrup, angostura bitters, applewood smoke." },
+                        { id: 6, name: "Golden Elixir", category: "drink", price: 22, image: "https://images.unsplash.com/photo-1536935338788-843bb6318b6c?auto=format&fit=crop&w=600&q=80", desc: "Champagne, edible gold leaf, elderflower liqueur." }
+                    ]);
+                }
+                if(!localStorage.getItem('users')) db.set('users', []);
+                if(!localStorage.getItem('bookings')) db.set('bookings', []);
+            }
+        };
+
+        // --- ROUTER ---
+        const router = {
+            navigate: (pageId) => {
+                // Hide all sections
+                document.querySelectorAll('.page-section').forEach(el => {
+                    el.classList.remove('active');
+                });
+                
+                // Show target
+                const target = document.getElementById(pageId);
+                if (target) {
+                    target.classList.add('active');
+                    window.scrollTo(0, 0);
+                }
+
+                // Close mobile menu if open
+                document.getElementById('mobile-menu').classList.add('hidden');
+
+                // Admin check
+                if(pageId === 'admin') {
+                    const user = auth.getUser();
+                    if(!user || user.role !== 'admin') {
+                        alert('Unauthorized');
+                        router.navigate('home');
+                        return;
+                    }
+                }
+            }
+        };
+
+        // --- AUTHENTICATION CONTROLLER ---
+        const auth = {
+            register: (e) => {
+                e.preventDefault();
+                const name = document.getElementById('reg-name').value;
+                const email = document.getElementById('reg-email').value;
+                const pass = document.getElementById('reg-pass').value;
+                
+                const users = db.get('users');
+                if(users.find(u => u.email === email)) {
+                    alert('Email already registered');
+                    return;
+                }
+
+                // First user is admin (for demo purposes)
+                const role = users.length === 0 ? 'admin' : 'user';
+
+                users.push({ id: Date.now(), name, email, pass, role });
+                db.set('users', users);
+                
+                auth.showToast('Account created! Please login.');
+                router.navigate('login');
+            },
+
+            login: (e) => {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const pass = document.getElementById('login-pass').value;
+                
+                const users = db.get('users');
+                const user = users.find(u => u.email === email && u.pass === pass);
+
+                if(user) {
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                    auth.updateNav();
+                    auth.showToast(`Welcome back, ${user.name}`);
+                    router.navigate('dashboard');
+                } else {
+                    alert('Invalid credentials');
+                }
+            },
+
+            logout: () => {
+                localStorage.removeItem('currentUser');
+                auth.updateNav();
+                router.navigate('home');
+            },
+
+            getUser: () => JSON.parse(localStorage.getItem('currentUser')),
+
+            updateNav: () => {
+                const user = auth.getUser();
+                const authNav = document.getElementById('auth-nav');
+                const userNav = document.getElementById('user-nav');
+                const adminLink = document.getElementById('admin-link');
+
+                if(user) {
+                    authNav.classList.add('hidden');
+                    userNav.classList.remove('hidden');
+                    document.getElementById('user-name-display').innerText = user.name;
+                    if(user.role === 'admin') adminLink.classList.remove('hidden');
+                    else adminLink.classList.add('hidden');
+                } else {
+                    authNav.classList.remove('hidden');
+                    userNav.classList.add('hidden');
+                }
+            },
+
+            showToast: (msg) => {
+                const toast = document.getElementById('toast');
+                document.getElementById('toast-msg').innerText = msg;
+                toast.classList.remove('translate-y-20');
+                setTimeout(() => toast.classList.add('translate-y-20'), 3000);
+            }
+        };
+
+        // --- THEME CONTROLLER ---
+        const theme = {
+            toggle: () => {
+                document.documentElement.classList.toggle('dark');
+                localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+            },
+            init: () => {
+                if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                }
+            }
+        };
+
+        // --- MENU APP ---
+        const menuApp = {
+            render: (filter = 'all') => {
+                const menu = db.get('menu');
+                const grid = document.getElementById('menu-grid');
+                const featured = document.getElementById('featured-dishes');
+                
+                grid.innerHTML = '';
+                
+                // Filter logic
+                const filtered = filter === 'all' ? menu : menu.filter(i => i.category === filter);
+
+                filtered.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'tilt-card glass-card rounded-2xl overflow-hidden group hover:shadow-2xl transition-all duration-300';
+                    card.innerHTML = `
+                        <div class="relative h-48 overflow-hidden">
+                            <img src="${item.image}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                            <div class="absolute top-3 right-3 bg-white/90 dark:bg-slate-900/90 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide shadow-sm">
+                                $${item.price}
+                            </div>
+                        </div>
+                        <div class="p-6 tilt-content">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-serif text-xl font-bold">${item.name}</h3>
+                            </div>
+                            <p class="text-slate-500 dark:text-slate-400 text-sm mb-4 line-clamp-2">${item.desc}</p>
+                            <button class="w-full py-2 border border-brand-gold text-brand-gold rounded-lg hover:bg-brand-gold hover:text-white transition-colors text-sm font-medium">Add to Order</button>
+                        </div>
+                    `;
+                    
+                    // Add 3D Tilt Logic
+                    card.addEventListener('mousemove', (e) => {
+                        const rect = card.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        const centerX = rect.width / 2;
+                        const centerY = rect.height / 2;
+                        const rotateX = ((y - centerY) / centerY) * -10; // Max 10deg rotation
+                        const rotateY = ((x - centerX) / centerX) * 10;
+
+                        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                    });
+
+                    card.addEventListener('mouseleave', () => {
+                        card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+                    });
+
+                    grid.appendChild(card);
+                });
+
+                // Render Featured (First 3 items) on Home
+                if(featured) {
+                    featured.innerHTML = '';
+                    menu.slice(0,3).forEach(item => {
+                        featured.innerHTML += `
+                            <div class="glass-card p-4 rounded-2xl flex items-center space-x-4 transform hover:-translate-y-2 transition-transform duration-300">
+                                <img src="${item.image}" class="w-24 h-24 rounded-xl object-cover">
+                                <div>
+                                    <h4 class="font-serif font-bold text-lg">${item.name}</h4>
+                                    <p class="text-brand-gold font-medium">$${item.price}</p>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            },
+
+            filter: (cat) => {
+                // Update buttons
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('bg-brand-gold', 'text-white');
+                    btn.classList.add('hover:bg-slate-200');
+                    if(btn.innerText.toLowerCase().includes(cat) || (cat === 'all' && btn.innerText === 'All')) {
+                        btn.classList.add('bg-brand-gold', 'text-white');
+                        btn.classList.remove('hover:bg-slate-200');
+                    }
+                });
+                menuApp.render(cat);
+            }
+        };
+
+        // --- BOOKING APP ---
+        const bookingApp = {
+            currentPrice: 50,
+            
+            updatePrice: (val) => {
+                bookingApp.currentPrice = val;
+                document.getElementById('booking-price').innerText = `$${val}.00`;
+            },
+
+            handleSubmit: (e) => {
+                e.preventDefault();
+                const user = auth.getUser();
+                if(!user) {
+                    alert('Please login to book a table');
+                    router.navigate('login');
+                    return;
+                }
+
+                // Gather Data
+                const bookingData = {
+                    id: Date.now(),
+                    userId: user.id,
+                    name: document.getElementById('book-name').value,
+                    email: document.getElementById('book-email').value,
+                    date: document.getElementById('book-date').value,
+                    time: document.getElementById('book-time').value,
+                    table: document.querySelector('input[name="table-type"]:checked').value,
+                    price: bookingApp.currentPrice,
+                    status: 'Pending'
+                };
+
+                // Store temporarily for payment page
+                sessionStorage.setItem('currentBooking', JSON.stringify(bookingData));
+
+                // Populate Payment Page
+                document.getElementById('pay-table').innerText = bookingData.table;
+                document.getElementById('pay-date').innerText = bookingData.date;
+                document.getElementById('pay-time').innerText = bookingData.time;
+                document.getElementById('pay-total').innerText = `$${bookingData.price}.00`;
+
+                router.navigate('payment');
+            }
+        };
+
+        // --- PAYMENT APP ---
+        const paymentApp = {
+            process: (e) => {
+                e.preventDefault();
+                const btn = e.target.querySelector('button');
+                const originalText = btn.innerText;
+                
+                btn.innerText = 'Processing...';
+                btn.disabled = true;
+
+                setTimeout(() => {
+                    const booking = JSON.parse(sessionStorage.getItem('currentBooking'));
+                    const bookings = db.get('bookings');
+                    booking.status = 'Confirmed';
+                    bookings.push(booking);
+                    db.set('bookings', bookings);
+
+                    document.getElementById('payment-success').classList.remove('hidden');
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                }, 2000);
+            }
+        };
+
+        // --- DASHBOARD APP ---
+        const dashboardApp = {
+            render: () => {
+                const user = auth.getUser();
+                if(!user) return;
+
+                document.getElementById('dash-name').innerText = user.name;
+                document.getElementById('dash-email').innerText = user.email;
+
+                const allBookings = db.get('bookings');
+                const myBookings = allBookings.filter(b => b.userId === user.id);
+                
+                document.getElementById('dash-visits').innerText = myBookings.length;
+
+                const list = document.getElementById('bookings-list');
+                list.innerHTML = '';
+
+                if(myBookings.length === 0) {
+                    list.innerHTML = '<div class="text-center py-10 text-slate-500 glass-card rounded-xl">No reservations found.</div>';
+                    return;
+                }
+
+                myBookings.sort((a,b) => b.id - a.id).forEach(b => {
+                    list.innerHTML += `
+                        <div class="glass-card p-4 rounded-xl flex justify-between items-center border-l-4 border-brand-gold">
+                            <div>
+                                <div class="font-bold text-lg">${b.date} at ${b.time}</div>
+                                <div class="text-sm text-slate-500 capitalize">${b.table} • $${b.price}</div>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">${b.status}</span>
+                                <button onclick="dashboardApp.cancel(${b.id})" class="text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    `;
+                });
+            },
+
+            cancel: (id) => {
+                if(confirm('Cancel this reservation?')) {
+                    let bookings = db.get('bookings');
+                    bookings = bookings.filter(b => b.id !== id);
+                    db.set('bookings', bookings);
+                    fetch("http://localhost:5000/api/bookings", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(booking)
+});
+                    dashboardApp.render();
+                    auth.showToast('Reservation Cancelled');
+                }
+            }
+        };
+
+        // --- ADMIN APP ---
+        const adminApp = {
+            switchTab: (tab) => {
+                document.getElementById('admin-menu-tab').classList.add('hidden');
+                document.getElementById('admin-bookings-tab').classList.add('hidden');
+                document.getElementById(`admin-${tab}-tab`).classList.remove('hidden');
+            },
+
+            addMenuItem: (e) => {
+                e.preventDefault();
+                const form = e.target;
+                const newItem = {
+                    id: Date.now(),
+                    name: form.name.value,
+                    category: form.category.value,
+                    price: Number(form.price.value),
+                    image: form.image.value,
+                    desc: form.desc.value
+                };
+
+                const menu = db.get('menu');
+                menu.push(newItem);
+                db.set('menu', menu);
+                
+                form.reset();
+                adminApp.renderMenuList();
+                auth.showToast('Menu Item Added');
+            },
+
+            renderMenuList: () => {
+                const menu = db.get('menu');
+                const container = document.getElementById('admin-menu-list');
+                container.innerHTML = '';
+                menu.forEach(item => {
+                    container.innerHTML += `
+                        <div class="flex items-center space-x-4 bg-white dark:bg-slate-800 p-3 rounded-lg shadow-sm">
+                            <img src="${item.image}" class="w-12 h-12 rounded object-cover">
+                            <div class="flex-1">
+                                <div class="font-bold">${item.name}</div>
+                                <div class="text-xs text-slate-500">$${item.price}</div>
+                            </div>
+                            <button onclick="adminApp.deleteItem(${item.id})" class="text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button>
+                        </div>
+                    `;
+                });
+            },
+
+            deleteItem: (id) => {
+                let menu = db.get('menu');
+                menu = menu.filter(i => i.id !== id);
+                db.set('menu', menu);
+                adminApp.renderMenuList();
+            },
+
+            renderBookings: () => {
+                const bookings = db.get('bookings');
+                const tbody = document.getElementById('admin-bookings-list');
+                tbody.innerHTML = '';
+                bookings.forEach(b => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="p-4 font-medium">${b.name}</td>
+                            <td class="p-4">${b.date}</td>
+                            <td class="p-4">${b.time}</td>
+                            <td class="p-4 capitalize">${b.table}</td>
+                            <td class="p-4"><span class="px-2 py-1 rounded text-xs bg-green-100 text-green-800">${b.status}</span></td>
+                        </tr>
+                    `;
+                });
+            }
+        };
+
+        // --- INITIALIZATION ---
+        window.addEventListener('DOMContentLoaded', () => {
+            db.init();
+            theme.init();
+            auth.updateNav();
+            menuApp.render();
+            
+            // Loader
+            setTimeout(() => {
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => document.getElementById('loader').remove(), 500);
+            }, 1500);
+
+            // Set today's date for booking
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('book-date').min = today;
+
+            // Admin Init
+            adminApp.renderMenuList();
+            adminApp.renderBookings();
+        });
+
+        // Hook dashboard render to navigation
+        const originalNavigate = router.navigate;
+        router.navigate = (page) => {
+            originalNavigate(page);
+            if(page === 'dashboard') dashboardApp.render();
+            if(page === 'admin') {
+                adminApp.renderMenuList();
+                adminApp.renderBookings();
+            }
+        };
+
+    </script>
+</body>
+</html>
