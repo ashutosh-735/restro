@@ -141,6 +141,15 @@
         .page-section.active {
             display: block;
         }
+
+        /* Image fallback styling */
+        .img-fallback {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300 font-sans overflow-x-hidden">
@@ -228,7 +237,10 @@
             <div class="relative h-screen flex items-center justify-center overflow-hidden">
                 <!-- Background Image with Parallax feel -->
                 <div class="absolute inset-0 z-0">
-                    <img src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Restaurant Interior" class="w-full h-full object-cover opacity-90 dark:opacity-60">
+                    <img src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" 
+                         alt="Restaurant Interior" 
+                         class="w-full h-full object-cover opacity-90 dark:opacity-60"
+                         onerror="this.parentElement.classList.add('img-fallback')">
                     <div class="absolute inset-0 bg-gradient-to-b from-slate-900/30 via-transparent to-slate-50 dark:to-slate-900"></div>
                 </div>
 
@@ -389,9 +401,12 @@
                         </form>
                     </div>
 
-                    <!-- Visual Side -->
-                    <div class="hidden lg:block relative h-full min-h-[600px] rounded-3xl overflow-hidden shadow-2xl">
-                        <img src="https://images.unsplash.com/photo-1550966871-3ed3c47e2ce2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" class="absolute inset-0 w-full h-full object-cover">
+                    <!-- Visual Side - FIXED IMAGE -->
+                    <div class="hidden lg:block relative h-full min-h-[600px] rounded-3xl overflow-hidden shadow-2xl bg-slate-800">
+                        <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
+                             alt="Premium Dining Experience" 
+                             class="absolute inset-0 w-full h-full object-cover"
+                             onerror="this.style.display='none'; this.parentElement.classList.add('img-fallback'); this.parentElement.innerHTML='<div class=\'flex flex-col items-center justify-center h-full text-slate-400\'><i class=\'fas fa-utensils text-6xl mb-4\'></i><p>Premium Dining</p></div>'">
                         <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent flex flex-col justify-end p-10">
                             <h3 class="font-serif text-3xl text-white mb-2">Premium Dining</h3>
                             <p class="text-slate-300 mb-6">Every reservation includes a complimentary welcome drink and amuse-bouche.</p>
@@ -673,14 +688,56 @@
             
             init: () => {
                 if (!localStorage.getItem('menu')) {
-                    // Seed Data
+                    // Seed Data with FIXED image URLs
                     db.set('menu', [
-                        { id: 1, name: "Truffle Risotto", category: "veg", price: 24, image: "https://images.unsplash.com/photo-1476124369491-e7addf5db371?auto=format&fit=crop&w=600&q=80", desc: "Arborio rice, black truffle oil, parmesan crisp." },
-                        { id: 2, name: "Wagyu Steak", category: "non-veg", price: 65, image: "https://images.unsplash.com/photo-1546241072-48010ad2862c?auto=format&fit=crop&w=600&q=80", desc: "A5 Wagyu beef, roasted garlic mash, asparagus." },
-                        { id: 3, name: "Lobster Thermidor", category: "non-veg", price: 58, image: "https://images.unsplash.com/photo-1551248429-40975aa4de74?auto=format&fit=crop&w=600&q=80", desc: "Creamy lobster meat, gruyere cheese, mustard sauce." },
-                        { id: 4, name: "Matcha Lava Cake", category: "dessert", price: 16, image: "https://images.unsplash.com/photo-1624353365286-3f8d62daad51?auto=format&fit=crop&w=600&q=80", desc: "Warm matcha cake with a molten white chocolate center." },
-                        { id: 5, name: "Smoked Old Fashioned", category: "drink", price: 18, image: "https://images.unsplash.com/photo-1597075687490-8f673c6c17f6?auto=format&fit=crop&w=600&q=80", desc: "Bourbon, maple syrup, angostura bitters, applewood smoke." },
-                        { id: 6, name: "Golden Elixir", category: "drink", price: 22, image: "https://images.unsplash.com/photo-1536935338788-843bb6318b6c?auto=format&fit=crop&w=600&q=80", desc: "Champagne, edible gold leaf, elderflower liqueur." }
+                        { 
+                            id: 1, 
+                            name: "Truffle Risotto", 
+                            category: "veg", 
+                            price: 24, 
+                            image: "https://images.unsplash.com/photo-1476124369491-e7addf5db371?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", 
+                            desc: "Arborio rice, black truffle oil, parmesan crisp." 
+                        },
+                        { 
+                            id: 2, 
+                            name: "Wagyu Steak", 
+                            category: "non-veg", 
+                            price: 65, 
+                            image: "https://images.unsplash.com/photo-1546241072-48010ad2862c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", 
+                            desc: "A5 Wagyu beef, roasted garlic mash, asparagus." 
+                        },
+                        { 
+                            id: 3, 
+                            name: "Lobster Thermidor", 
+                            category: "non-veg", 
+                            price: 58, 
+                            image: "https://images.unsplash.com/photo-1551248429-40975aa4de74?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", 
+                            desc: "Creamy lobster meat, gruyere cheese, mustard sauce." 
+                        },
+                        { 
+                            id: 4, 
+                            name: "Matcha Lava Cake", 
+                            category: "dessert", 
+                            price: 16, 
+                            image: "https://images.unsplash.com/photo-1624353365286-3f8d62daad51?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", 
+                            desc: "Warm matcha cake with a molten white chocolate center." 
+                        },
+                        { 
+                            id: 5, 
+                            name: "Smoked Old Fashioned", 
+                            category: "drink", 
+                            price: 18, 
+                            image: "https://images.unsplash.com/photo-1597075687490-8f673c6c17f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", 
+                            desc: "Bourbon, maple syrup, angostura bitters, applewood smoke." 
+                        },
+                        { 
+                            id: 6, 
+                            name: "Golden Elixir", 
+                            category: "drink", 
+                            price: 22, 
+                            image: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", 
+                            desc: "Champagne, edible gold leaf, elderflower liqueur." 
+                        }
                     ]);
                 }
                 if(!localStorage.getItem('users')) db.set('users', []);
@@ -823,8 +880,11 @@
                     const card = document.createElement('div');
                     card.className = 'tilt-card glass-card rounded-2xl overflow-hidden group hover:shadow-2xl transition-all duration-300';
                     card.innerHTML = `
-                        <div class="relative h-48 overflow-hidden">
-                            <img src="${item.image}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                        <div class="relative h-48 overflow-hidden bg-slate-800">
+                            <img src="${item.image}" 
+                                 alt="${item.name}" 
+                                 class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                                 onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'flex items-center justify-center h-full text-slate-500\'><i class=\'fas fa-utensils text-3xl\'></i></div>'">
                             <div class="absolute top-3 right-3 bg-white/90 dark:bg-slate-900/90 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide shadow-sm">
                                 $${item.price}
                             </div>
@@ -845,7 +905,7 @@
                         const y = e.clientY - rect.top;
                         const centerX = rect.width / 2;
                         const centerY = rect.height / 2;
-                        const rotateX = ((y - centerY) / centerY) * -10; // Max 10deg rotation
+                        const rotateX = ((y - centerY) / centerY) * -10;
                         const rotateY = ((x - centerX) / centerX) * 10;
 
                         card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
@@ -864,7 +924,12 @@
                     menu.slice(0,3).forEach(item => {
                         featured.innerHTML += `
                             <div class="glass-card p-4 rounded-2xl flex items-center space-x-4 transform hover:-translate-y-2 transition-transform duration-300">
-                                <img src="${item.image}" class="w-24 h-24 rounded-xl object-cover">
+                                <div class="w-24 h-24 rounded-xl overflow-hidden bg-slate-800 flex-shrink-0">
+                                    <img src="${item.image}" 
+                                         alt="${item.name}" 
+                                         class="w-full h-full object-cover"
+                                         onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'flex items-center justify-center h-full text-slate-500\'><i class=\'fas fa-utensils\'></i></div>'">
+                                </div>
                                 <div>
                                     <h4 class="font-serif font-bold text-lg">${item.name}</h4>
                                     <p class="text-brand-gold font-medium">$${item.price}</p>
@@ -1000,11 +1065,6 @@
                     let bookings = db.get('bookings');
                     bookings = bookings.filter(b => b.id !== id);
                     db.set('bookings', bookings);
-                    fetch("http://localhost:5000/api/bookings", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify(booking)
-});
                     dashboardApp.render();
                     auth.showToast('Reservation Cancelled');
                 }
@@ -1047,12 +1107,17 @@
                 menu.forEach(item => {
                     container.innerHTML += `
                         <div class="flex items-center space-x-4 bg-white dark:bg-slate-800 p-3 rounded-lg shadow-sm">
-                            <img src="${item.image}" class="w-12 h-12 rounded object-cover">
-                            <div class="flex-1">
-                                <div class="font-bold">${item.name}</div>
+                            <div class="w-12 h-12 rounded overflow-hidden bg-slate-700 flex-shrink-0">
+                                <img src="${item.image}" 
+                                     alt="${item.name}" 
+                                     class="w-full h-full object-cover"
+                                     onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'flex items-center justify-center h-full text-slate-500 text-xs\'><i class=\'fas fa-image\'></i></div>'">
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="font-bold truncate">${item.name}</div>
                                 <div class="text-xs text-slate-500">$${item.price}</div>
                             </div>
-                            <button onclick="adminApp.deleteItem(${item.id})" class="text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button>
+                            <button onclick="adminApp.deleteItem(${item.id})" class="text-red-400 hover:text-red-600 flex-shrink-0"><i class="fas fa-trash"></i></button>
                         </div>
                     `;
                 });
