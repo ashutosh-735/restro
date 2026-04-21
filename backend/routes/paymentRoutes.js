@@ -17,8 +17,8 @@ router.post("/checkout", async (req, res) => {
             },
             quantity: 1
         }],
-        success_url: "http://localhost:5500/index.html?success=true",
-        cancel_url: "http://localhost:5500/index.html?cancel=true"
+       success_url: "https://lumiere-frontend.onrender.com/index.html?success=true",
+       cancel_url: "https://lumiere-frontend.onrender.com/index.html?cancel=true"
     });
 
     res.json({ url: session.url });
